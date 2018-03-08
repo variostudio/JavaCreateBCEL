@@ -1,2 +1,4 @@
 # JavaCreateBCEL
-How to use BCEL for generation classes
+How to use Byte Code Engineering Library (BCEL) for generation classes
+
+
