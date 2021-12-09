@@ -1,13 +1,13 @@
 package example;
 
+import org.apache.bcel.classfile.JavaClass;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import com.sun.org.apache.bcel.internal.classfile.JavaClass;
-
 public class BCELClassLoader extends ClassLoader {
 	
-	private JavaClass root;
+	private final JavaClass root;
 
 	public BCELClassLoader(JavaClass rootDir) {
 		if (rootDir == null)
@@ -15,7 +15,7 @@ public class BCELClassLoader extends ClassLoader {
 		root = rootDir;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes"})
 	public Class loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
 
@@ -78,5 +78,4 @@ public class BCELClassLoader extends ClassLoader {
 				+ ", res: " + res);
 		return res;
 	}
-
 }

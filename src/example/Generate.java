@@ -1,29 +1,23 @@
 package example;
 
-import java.lang.reflect.Method;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.*;
 
-import com.sun.org.apache.bcel.internal.Constants;
-import com.sun.org.apache.bcel.internal.generic.ClassGen;
-import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
-import com.sun.org.apache.bcel.internal.generic.FieldGen;
-import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
-import com.sun.org.apache.bcel.internal.generic.InstructionList;
-import com.sun.org.apache.bcel.internal.generic.MethodGen;
-import com.sun.org.apache.bcel.internal.generic.Type;
+import java.lang.reflect.Method;
 
 public class Generate {
 	public static void main(String[] args) {
 		String className = "org.troll.test.HelloWorld";
 		// String className = "HelloWorld";
 
-		ClassGen cg = new ClassGen(className, "java.lang.Object", "<generated>", Constants.ACC_PUBLIC | Constants.ACC_SUPER, null);
+		ClassGen cg = new ClassGen(className, "java.lang.Object", "<generated>", Const.ACC_PUBLIC | Const.ACC_SUPER, null);
 
 		ConstantPoolGen cp = cg.getConstantPool(); // cg creates constant pool
 		// InstructionList il = new InstructionList();
 
-		FieldGen age = new FieldGen(Constants.ACC_PUBLIC, Type.INT, "age", cp);
+		FieldGen age = new FieldGen(Const.ACC_PUBLIC, Type.INT, "age", cp);
 
-		FieldGen cnt = new FieldGen(Constants.ACC_PUBLIC, Type.INT, "cnt", cp);
+		FieldGen cnt = new FieldGen(Const.ACC_PUBLIC, Type.INT, "cnt", cp);
 
 		cg.addField(age.getField());
 		cg.addField(cnt.getField());
@@ -35,7 +29,7 @@ public class Generate {
 		createSetter(cg, cnt);
 
 		// il.dispose(); // Allow instruction handles to be reused
-		cg.addEmptyConstructor(Constants.ACC_PUBLIC);
+		cg.addEmptyConstructor(Const.ACC_PUBLIC);
 
 		try {
 			BCELClassLoader loader = new BCELClassLoader(cg.getJavaClass());
@@ -44,7 +38,7 @@ public class Generate {
 
 			@SuppressWarnings("rawtypes")
 			Class clx = loader.loadClass(className, true);
-			Object instance = clx.newInstance();
+			Object instance = clx.getDeclaredConstructor().newInstance();
 
 			Method setter = instance.getClass().getMethod("setAge", int.class);
 			Method setterCnt = instance.getClass().getMethod("setCnt", int.class);
@@ -85,7 +79,7 @@ public class Generate {
 		InstructionFactory ins = new InstructionFactory(cg, cpg);
 
 		InstructionList il = new InstructionList();
-		MethodGen getter = new MethodGen(accessFlags, fg.getType(), new Type[] {}, new String[] {}, createGetterName(fg.getName()), cg.getClassName(), il, cpg);
+		MethodGen getter = new MethodGen(accessFlags, fg.getType(), new Type[]{}, new String[]{}, createGetterName(fg.getName()), cg.getClassName(), il, cpg);
 
 		il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
 		il.append(ins.createGetField(cg.getClassName(), fg.getName(), fg.getType()));
@@ -104,7 +98,7 @@ public class Generate {
 		InstructionFactory ins = new InstructionFactory(cg, cpg);
 
 		InstructionList il = new InstructionList();
-		MethodGen getter = new MethodGen(accessFlags, Type.VOID, new Type[] { fg.getType() }, new String[] { fg.getName() }, createSetterName(fg.getName()),
+		MethodGen getter = new MethodGen(accessFlags, Type.VOID, new Type[]{fg.getType()}, new String[]{fg.getName()}, createSetterName(fg.getName()),
 				cg.getClassName(), il, cpg);
 
 		il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
@@ -134,5 +128,4 @@ public class Generate {
 
 		return "set" + capitalized;
 	}
-
 }
